@@ -20,43 +20,56 @@ migrate((app) => {
         "type": "text"
       },
       {
-        "autogeneratePattern": "",
+        "cascadeDelete": false,
+        "collectionId": "pbc_2047001084",
         "help": "",
         "hidden": false,
-        "id": "text1579384326",
-        "max": 0,
-        "min": 0,
-        "name": "name",
-        "pattern": "",
+        "id": "relation267069811",
+        "maxSelect": 0,
+        "minSelect": 0,
+        "name": "main_guest",
         "presentable": false,
-        "primaryKey": false,
-        "required": false,
+        "required": true,
         "system": false,
-        "type": "text"
+        "type": "relation"
       },
       {
-        "convertURLs": false,
+        "cascadeDelete": false,
+        "collectionId": "pbc_3085411453",
         "help": "",
         "hidden": false,
-        "id": "editor274306226",
-        "maxSize": 0,
-        "name": "facility",
+        "id": "relation1923043739",
+        "maxSelect": 0,
+        "minSelect": 0,
+        "name": "room",
         "presentable": false,
-        "required": false,
+        "required": true,
         "system": false,
-        "type": "editor"
+        "type": "relation"
       },
       {
         "help": "",
         "hidden": false,
-        "id": "number2841044372",
-        "min": 0,
-        "name": "price",
-        "onlyInt": false,
+        "id": "date3741903513",
+        "max": "",
+        "min": "",
+        "name": "from_date",
         "presentable": false,
-        "required": false,
+        "required": true,
         "system": false,
-        "type": "number"
+        "type": "date"
+      },
+      {
+        "help": "",
+        "hidden": false,
+        "id": "date1299195573",
+        "max": "",
+        "min": "",
+        "name": "to_date",
+        "presentable": false,
+        "required": true,
+        "system": false,
+        "type": "date"
       },
       {
         "hidden": false,
@@ -79,12 +92,10 @@ migrate((app) => {
         "type": "autodate"
       }
     ],
-    "id": "pbc_3980138507",
-    "indexes": [
-      "CREATE INDEX `idx_di54ywn4vs` ON `room_types` (`name`)"
-    ],
+    "id": "pbc_1473635903",
+    "indexes": [],
     "listRule": null,
-    "name": "room_types",
+    "name": "reservations",
     "system": false,
     "type": "base",
     "updateRule": null,
@@ -93,7 +104,7 @@ migrate((app) => {
 
   return app.save(collection);
 }, (app) => {
-  const collection = app.findCollectionByNameOrId("pbc_3980138507");
+  const collection = app.findCollectionByNameOrId("pbc_1473635903");
 
   return app.delete(collection);
 })

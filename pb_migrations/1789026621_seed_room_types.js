@@ -7,11 +7,13 @@ migrate((app) => {
       id: "tzuj5k212m6vs9k",
       name: "Reguler",
       facility: "<p>Basic (AC, Toilet, Water Heater)</p>",
+      price: 150000,
     },
     {
       id: "26qfsmrfyixy51t",
       name: "Plus",
       facility: "<p>Basic (AC, Toilet, Water Heater)<br>+ Kitchen</p>",
+      price: 250000,
     },
   ];
 
@@ -27,6 +29,7 @@ migrate((app) => {
     record.set("id", data.id);
     record.set("name", data.name);
     record.set("facility", data.facility);
+    record.set("price", data.price);
 
     app.save(record);
   }
