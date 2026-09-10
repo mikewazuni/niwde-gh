@@ -1,0 +1,11 @@
+opencollection: 1.0.0
+info:
+  name: Niwde Stay
+  summary: Custom endpoints for Niwde Stay (PocketBase).
+  version: 1.0.0
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git

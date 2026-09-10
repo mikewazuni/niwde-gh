@@ -37,10 +37,6 @@ docker compose up -d
 docker compose exec niwde-pb /pb/pocketbase superuser upsert admin@app.com Admin12345 --dir=/pb/pb_data
 ```
 
-## Custom endpoints
+## API Endpoints
 
-| Method | URL                                        | Result                       |
-| ------ | ------------------------------------------ | ---------------------------- |
-| GET    | http://localhost:8190/hello                | `{"message":"Hello world!"}` |
-| GET    | http://localhost:8190/hello/niwde          | `{"message":"Hello niwde!"}` |
-| GET    | http://localhost:8190/api/hello?name=niwde | `{"message":"Hello niwde!"}` |
+See [docs/nide-stay-oc/](docs/nide-stay-oc/) for API docs.

@@ -1,0 +1,31 @@
+info:
+  name: Available Rooms (by type)
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8190/api/rooms/available
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "from_date": "2026-09-12",
+        "to_date": "2026-09-13",
+        "room_type": "Plus"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: '200'
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Same as Available Rooms, filtered by room type name (e.g. `Plus`, `Reguler`).
