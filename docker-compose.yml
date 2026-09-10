@@ -1,0 +1,28 @@
+volumes:
+  data: {}
+
+services:
+  niwde-pb:
+    # Local dev: builds ./Dockerfile (vanilla PocketBase + pb_hooks/).
+    # The built image is tagged as the GHCR image below.
+    build:
+      context: .
+      args:
+        PB_VERSION: ${PB_VERSION:-0.40.3}
+    image: ghcr.io/mikewazuni/niwde-stay:latest
+    container_name: niwde-pb
+    restart: unless-stopped
+    ports:
+      - 8190:8090
+    volumes:
+      - data:/pb/pb_data
+      - ./pb_migrations:/pb/pb_migrations
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      EMAIL: ${EMAIL:-admin@app.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-Admin12345}
+    # To run the prebuilt GHCR image instead of building locally,
+    # comment out the `build:` block above and run:
+    #   docker compose pull && docker compose up -d

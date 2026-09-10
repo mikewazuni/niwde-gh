@@ -1,0 +1,46 @@
+# Niwde Stay
+
+Framework use PocketBase (https://pocketbase.io)
+Docs: https://pocketbase.io/docs
+
+## Quick start
+
+1. Create `docker-compose.yml`
+
+```yaml
+volumes:
+  data: {}
+
+services:
+  niwde-stay-app:
+    image: ghcr.io/mikewazuni/niwde-stay:latest
+    ports:
+      - 8190:8090
+    volumes:
+      - data:/pb/pb_data
+    environment:
+      EMAIL: admin@app.com
+      ADMIN_PASSWORD: Admin12345
+```
+
+2. Run
+
+```bash
+docker compose up -d
+```
+
+3. Open http://localhost:8190/_/ in your browser
+
+## Create the superuser
+
+```bash
+docker compose exec niwde-pb /pb/pocketbase superuser upsert admin@app.com Admin12345 --dir=/pb/pb_data
+```
+
+## Custom endpoints
+
+| Method | URL                                        | Result                       |
+| ------ | ------------------------------------------ | ---------------------------- |
+| GET    | http://localhost:8190/hello                | `{"message":"Hello world!"}` |
+| GET    | http://localhost:8190/hello/niwde          | `{"message":"Hello niwde!"}` |
+| GET    | http://localhost:8190/api/hello?name=niwde | `{"message":"Hello niwde!"}` |
