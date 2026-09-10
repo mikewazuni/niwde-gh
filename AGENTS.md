@@ -1,6 +1,10 @@
 Framework use PocketBase extend with JavaScript
 Documentation https://pocketbase.io/docs
 
+## Goal
+
+User easliy use this MVP app with simple docker compose image `ghcr.io/mikewazuni/niwde-stay:latest`
+
 ## Current State
 
 Current state is development, tidy up the migration, by do dropin replacement, and just rebuilt the container for local development

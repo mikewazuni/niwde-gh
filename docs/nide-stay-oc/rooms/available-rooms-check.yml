@@ -1,0 +1,35 @@
+info:
+  name: Available Rooms Check
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:8190/api/rooms/available-check
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "from_date": "2026-09-12",
+        "to_date": "2026-09-13"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: '200'
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Per-type availability flags (no counts, no room details).
+
+  - `from_date`: required `YYYY-MM-DD`, today or later.
+  - `to_date`: required `YYYY-MM-DD`, must be after `from_date`.
+  - Always covers all room types; no `room_type` filter.
+  - Response: `{ from_date, to_date, types: [{ id, name, available }] }`.
