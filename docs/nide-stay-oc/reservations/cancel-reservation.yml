@@ -1,0 +1,35 @@
+info:
+  name: Cancel Reservation
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:8190/api/reservations/cancel
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "reservation_id": "<reservationId>",
+        "phone": "081200000001"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: '[200, 404]'
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Cancel a booking after ownership check.
+
+  - `reservation_id` required; `phone` or `email` required and must match the booking guest.
+  - Mismatch returns `403`; unknown id returns `404`.
+  - Response: `{id, cancelled: true, from_date, to_date, room_label}`.
+  - Replace `<reservationId>` with a real id from Book/Lookup.

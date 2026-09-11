@@ -1,0 +1,24 @@
+info:
+  name: List Room Types
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://localhost:8190/api/room-types
+  headers: []
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: '200'
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Public price list (room_types is admin-only by collection rules).
+
+  - Response: `{count, types: [{id, name, price, facility}]}` sorted by price.
+  - Use for "berapa harga?" questions without dates.

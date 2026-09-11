@@ -1,0 +1,42 @@
+info:
+  name: Book Reservation
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:8190/api/reservations/book
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "from_date": "2026-09-12",
+        "to_date": "2026-09-13",
+        "room_type": "Plus",
+        "name": "Guest One",
+        "phone": "081200000001"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: '[201, 200, 409]'
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Book a room (find-or-create guest, auto-pick cheapest available).
+
+  - `from_date`: required `YYYY-MM-DD`, today or later.
+  - `to_date`: required `YYYY-MM-DD`, must be after `from_date`.
+  - Room: `room_id` wins if given, else `room_type` name (case-insensitive), else cheapest available.
+  - Guest: `name` required, `phone` or `email` required.
+  - Retry-safe: same guest+room+dates returns `200 {deduplicated:true}`.
+  - Overlap/maintenance rejected with `409` (also enforced on direct record create/update).
+  - Response: `{id, from_date, to_date, nights, total_price, room{id,label,type}, guest{id,name,phone,email}}`.
+  - Alt body with explicit room: `{"from_date":"2026-09-12","to_date":"2026-09-13","room_id":"<roomId>","name":"Jane","phone":"081200000099"}`.

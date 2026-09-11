@@ -83,10 +83,10 @@ migrate((app) => {
       }
     ],
     "id": "pbc_2047001084",
-    "indexes": [
-      "CREATE UNIQUE INDEX `idx_k9o03fmizq` ON `guests` (`phone`)",
-      "CREATE UNIQUE INDEX `idx_nlrz0m49lt` ON `guests` (`email`)"
-    ],
+    // No unique indexes: front-office guests often give only phone OR
+    // only email, and uniques reject multiple empty ("") values.
+    // Dedup is handled in code (find-or-create in reservations-book.pb.js).
+    "indexes": [],
     "listRule": null,
     "name": "guests",
     "system": false,
