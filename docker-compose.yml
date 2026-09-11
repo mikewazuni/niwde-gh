@@ -1,3 +1,7 @@
+networks:
+  niwdestay-net:
+    name: niwdestay-net
+
 volumes:
   data: {}
 
@@ -17,6 +21,8 @@ services:
     volumes:
       - data:/pb/pb_data
       - ./pb_migrations:/pb/pb_migrations
+    networks:
+      - niwdestay-net
     env_file:
       - path: .env
         required: false
