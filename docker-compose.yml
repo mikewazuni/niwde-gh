@@ -6,7 +6,7 @@ volumes:
   data: {}
 
 services:
-  niwde-pb:
+  niwde-stay-app:
     # Local dev: builds ./Dockerfile (vanilla PocketBase + pb_hooks/).
     # The built image is tagged as the GHCR image below.
     build:
