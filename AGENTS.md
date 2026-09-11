@@ -5,11 +5,15 @@ User easliy use this MVP app with simple docker compose image from `ghcr.io/mike
 ## The Stack
 
 - **PocketBase** extend with JavaScript as the Framework of the core app. Documentation on https://pocketbase.io/docs
-- **N8n** chat integration, acting as Front-officer, accessed through mcp
+- **N8n** chat integration, acting as Receptionist, accessed through mcp
 
 ## Current State
 
 Current project is on an early development, drop-in replacement for migration is preferred. Rebuild the container in local development.
+
+## Workflow
+
+Explore current records in PocketBase and n8n existing flow before when planning
 
 ## API Docs
 

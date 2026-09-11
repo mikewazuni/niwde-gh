@@ -20,13 +20,13 @@ runtime:
   assertions:
     - expression: res.status
       operator: eq
-      value: '200'
+      value: "200"
 
 settings:
   encodeUrl: true
 
 docs: |-
-  Front-office "cek booking saya".
+  Receptionist "cek booking saya".
 
   - Body: `{phone?}` / `{email?}` lists all guest bookings, or `{reservation_id}` (+ optional contact check) fetches one.
   - At least one of `phone`, `email`, `reservation_id` required.
