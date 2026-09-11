@@ -13,7 +13,8 @@ Current project is on an early development, drop-in replacement for migration is
 
 ## Workflow
 
-Explore current records in PocketBase and n8n existing flow before when planning
+Explore current records in PocketBase and n8n existing flow before when planning.
+Must read `N8N_RECEPTIONIS_WORKFLOW.md` for n8n receptionist overview. If workflow changed, update that file.
 
 ## API Docs
 
