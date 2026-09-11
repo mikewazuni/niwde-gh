@@ -1,13 +1,15 @@
-Framework use PocketBase extend with JavaScript
-Documentation https://pocketbase.io/docs
-
 ## Goal
 
-User easliy use this MVP app with simple docker compose image `ghcr.io/mikewazuni/niwde-stay:latest`
+User easliy use this MVP app with simple docker compose image from `ghcr.io/mikewazuni/niwde-stay:latest`
+
+## The Stack
+
+- **PocketBase** extend with JavaScript as the Framework of the core app. Documentation on https://pocketbase.io/docs
+- **N8n** chat integration, acting as Front-officer, accessed through mcp
 
 ## Current State
 
-Current state is development, tidy up the migration, by do dropin replacement, and just rebuilt the container for local development
+Current project is on an early development, drop-in replacement for migration is preferred. Rebuild the container in local development.
 
 ## API Docs
 
