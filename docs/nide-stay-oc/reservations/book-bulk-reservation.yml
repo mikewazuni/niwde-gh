@@ -1,0 +1,44 @@
+info:
+  name: Book Bulk Reservations
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://localhost:8190/api/reservations/book-bulk
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "from_date": "2026-12-01",
+        "to_date": "2026-12-03",
+        "room_type": "Plus",
+        "quantity": 2,
+        "name": "Guest One",
+        "phone": "081200000001"
+      }
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: in
+      value: '[201, 200, 409]'
+
+settings:
+  encodeUrl: true
+
+docs: |-
+  Book N rooms of one type in a single call (find-or-create guest).
+
+  - `from_date`: required `YYYY-MM-DD`, today or later.
+  - `to_date`: required `YYYY-MM-DD`, must be after `from_date`.
+  - `room_type`: required name (case-insensitive).
+  - `quantity`: required int 1-10 (numeric strings accepted).
+  - Guest: `name` required, `phone` or `email` required.
+  - Retry-safe: existing same guest+dates+type rooms count toward `quantity`, returns `200 {deduplicated:true}`.
+  - Shortfall rejected with `409 {requested, already_booked, available}`.
+  - Overlap/maintenance rejected with `409` (also enforced on direct record create/update).
+  - Response: `{ids, from_date, to_date, nights, quantity, total_price (combined), rooms[{id,label,type}], guest{id,name,phone,email}}`.

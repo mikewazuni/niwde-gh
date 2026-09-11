@@ -40,3 +40,4 @@ docs: |-
   - Overlap/maintenance rejected with `409` (also enforced on direct record create/update).
   - Response: `{id, from_date, to_date, nights, total_price, room{id,label,type}, guest{id,name,phone,email}}`.
   - Alt body with explicit room: `{"from_date":"2026-09-12","to_date":"2026-09-13","room_id":"<roomId>","name":"Jane","phone":"081200000099"}`.
+  - Multi-room: use `POST /api/reservations/book-bulk` (see `book-bulk-reservation`).
