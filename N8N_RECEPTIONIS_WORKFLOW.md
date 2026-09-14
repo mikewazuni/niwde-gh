@@ -1,33 +1,39 @@
 # N8N Receptionist Workflow
 
+Purpose: Putu, Niwde Stay receptionist in Bahasa Indonesia via webchat + Telegram. Handles greeting, prices, facilities, availability, booking, lookup, cancel. Hotel-only scope.
+
 Active workflow: `Receptionist workflow` (`jrd5X0Xeye1AIUei`, active, 41 nodes).
 
-Triggers: Chat Trigger (`@n8n/n8n-nodes-langchain.chatTrigger`, public, responseMode `responseNodes`) + Telegram Trigger (`n8n-nodes-base.telegramTrigger`, `message` updates, `Telegram account` credential) -> `Telegram Normalize` (Code, maps `message.text/caption` to `chatInput`, `tg-{chat.id}` to `sessionId`/`telegramChatId`, `channel: telegram`). Both feed `SOP` (Set, `includeOtherFields`, carries unified `chatInput`/`sessionId`).
-
 Flow:
-`Chat Trigger` -> `SOP` (Set) -> `SOP - Examples` (Set) -> `Input Guard` (agent v3.1, maxIterations 1, NO memory, stateless classify of current `chatInput` only) -> `Check Input Allowed` (If `allowed == true`) -> true: `Load Guest Profile` (Data table `guest_profiles` get by `SOP.sessionId`, `alwaysOutputData`, deterministically injected as `GUEST PROFILE` into agent prompt) -> `Get Room Types` (HTTP, live types/prices/facilities into both agents) -> `Receptionist Agent` -> side-branch `Parse Profile` (Code, merges loaded row + draft `PROFILE:` line, never wipes on miss, `session_id` from `SOP.sessionId` with Chat/Telegram fallback) -> `Save Guest Profile` (Data table upsert by `sessionId`, `onError: continueRegularOutput` so a save failure never blocks the reply) alongside main-branch `Response Formatter` (`onError: continueErrorOutput`, retries 3x/5s) -> `Response Guardrail` (Code, deterministic) -> `Check Channel` (If `SOP.channel == telegram`) -> false (webchat): `Send Bubble 1` (chat) -> `Check Has Bubble 2` (If bubble2 notEmpty) -> `Send Bubble 2` (chat, only if detail exists) -> `Check Has Bubble 3` (If bubble3 notEmpty) -> `Send Bubble 3` (chat, only if question/closing exists). Skip path: `Check Has Bubble 2` false -> `Check Has Bubble 3` directly. True (telegram): `Telegram Send 1` -> `Check Has Bubble 2 Tg` -> `Telegram Send 2` -> `Check Has Bubble 3 Tg` -> `Telegram Send 3` (same bubble rules via `Telegram account` credential, `chatId = SOP.telegramChatId`, `appendAttribution: false`). False branch: `Check Input Allowed` false -> `Check Refusal Channel` -> webchat `Send Refusal` / telegram `Telegram Refusal` (exact `Maaf, saya tidak bisa membantu.`, end). Error branch: `Response Formatter` output 2 -> `Fallback Bubbles` (Code) -> `Response Guardrail` -> `Check Channel` (fallback can no longer bypass guard). `Input Guard` fails closed (`onError: continueRegularOutput` -> missing `allowed` reads false -> refusal).
+
+1. Triggers (Chat + Telegram) normalize to unified `chatInput` / `sessionId`.
+2. `Input Guard` blocks non-hotel / injection with fixed refusal, otherwise continue.
+3. Load persistent `guest_profiles` + live room types, then `Receptionist Agent` answers with PocketBase tools.
+4. Agent draft saved to guest profile; `Response Formatter` splits reply to bubble1/2/3.
+5. `Response Guardrail` final check, then send bubbles per channel (webchat / Telegram).
 
 Agents:
 
-- `Receptionist Agent` (agent v3.1, maxIterations 8): system prompt from `SOP.sop_text`, identity Putu, Bahasa Indonesia default, calls tools. Sub-nodes: `Sumopod Chat Model` (lmChatOpenAi, MiniMax-M2.7-highspeed, temp 0.3), `Simple Memory` (shared buffer window 50, customKey `SOP.sessionId` so webchat `sessionId` and Telegram `tg-{chat.id}` stay isolated per user), 6 HTTP tools.
-- `Response Formatter` (agent v3.1, maxIterations 2, retry `maxTries: 3` / `waitBetweenTries: 5000`, `onError: continueErrorOutput`): LLM formatter to `bubble1` (required statement) + `bubble2` (optional detail or empty) + `bubble3` (single question, closing thanks on success, or empty). Sub-nodes: same model + memory, `Bubble Parser` (structured output `{bubble1, bubble2, bubble3}`). Reads newest `PROFILE:` line for reuse checks, never emits it into bubbles.
-- `Response Guardrail` (Code, no LLM): deterministic final check on formatter/fallback output — schema normalize, refusal canonical `Maaf, saya tidak bisa membantu.`, block false `reservasi berhasil` without draft reservation id, strip markdown/emoji/`ya` particle, `PROFILE:`-line strip (carry-forward state never reaches guest), `?` only in `bubble3`, bare-date WITA strip + clock-time WITA ensure, plain-words replace, Putu-dedup, length caps. Always outputs `{output: {bubble1, bubble2, bubble3}}` for `Send Bubble 1` (`$json`) and `Check/Send Bubble 2/3` (`$('Response Guardrail')`).
-- `Input Guard` (agent v3.1, maxIterations 1, NO memory linkage — stateless by design so guard runs never pollute `Simple Memory` and poisoned history can't sway classification; input is only current `chatInput` via `={{ $('SOP').item.json.chatInput }}`): scope + prompt-injection classifier to `{allowed, reason}` via `Guard Parser`. Sub-nodes: `Guard Model` (lmChatOpenAi, MiniMax-M2.7-highspeed, temp 0, reuses `Sumopod` credential) + `Guard Parser` only — no tools, no memory. ALLOW hotel topics, BLOCK non-hotel and injection (`abaikan instruksi`, reveal prompt, roleplay, jailbreak, hotel-word pretext). Blocked input never reaches tools — saves the 8-iter agent + formatter cost.
+- `Input Guard` — stateless scope filter, no tools/memory.
+- `Receptionist Agent` — main agent (Putu) with shared conversation memory.
+- `Response Formatter` — formats reply to 1-3 short bubbles.
+- `Response Guardrail` — deterministic style/safety check, no LLM.
 
-PocketBase tools (base `http://niwde-stay-app:8090`):
+PocketBase tools:
 
-- `List Room Types` GET `/api/room-types` — prices/facilities, must-call before price answers.
-- `Check Availability` POST `/api/rooms/available-check` `{from_date, to_date}` — quick check.
-- `Search Available Rooms` POST `/api/rooms/available` `{from_date, to_date, room_type?}` — detail label/price/facility.
-- `Book Reservation` POST `/api/reservations/book` `{from_date, to_date, room_type?, room_id?, name, phone?, email?}` — single room, confirm before call, find-or-creates `guests` (see `pb_hooks/reservations-book.pb.js`), no separate guest tool.
-- `Book Bulk Reservations` POST `/api/reservations/book-bulk` `{from_date, to_date, room_type, quantity, name, phone?, email?}` — N rooms in one call (one reservation per room, combined total), confirm N/type/dates/total first; shortfall `409 {requested, already_booked, available}`.
-- `Lookup Reservation` POST `/api/reservations/lookup` `{phone?, email?, reservation_id?}`.
-- `Cancel Reservation` POST `/api/reservations/cancel` `{reservation_id, phone?, email?}` — confirm before call.
+- List Room Types, Check Availability, Search Available Rooms, Book / Book Bulk, Lookup, Cancel.
 
-Rules (SOP + Guardrail): source of truth for type names/prices/facilities is the `List Room Types` tool output — nothing hardcoded in SOP (names/prices change in system anytime); templates use `{Type} Rp {price}` placeholders, draft numbers corrected against tool data, never invent facilities. INTRO: perkenalan `saya Putu dari Niwde Stay` max ONCE per conversation — include only if no prior assistant message contains `Putu`, later replies omit it (price template has first/later variants); guardrail strips repeats. NO-REPEAT: never restate prices/facilities/checkinout already stated in history; follow-ups confirm briefly (e.g. the chosen type and price) with facilities only when asked or first presenting types (`for_formatter` rule 7). CHECKINOUT: check-in 14:00 WITA, check-out 12:00 WITA — state on booking success (with `reservation_id`) and when asked, always with WITA. BOOKING: require `from_date, to_date, name` + `phone` (email optional, only if guest wants details by email — never ask otherwise); REUSE FIRST from full history, never re-ask given data; PERSIST: every draft ends with internal `PROFILE: name | phone | email | dates | type | qty | reservations` (newest wins, `none` if unknown) — a parser merges it into the `guest_profiles` table and the table (`GUEST PROFILE` in prompt) is the source of truth for reuse, so guest data + reservation ids survive any conversation length; formatter never emits it, guardrail strips leaks; if still missing ask one per reply in order dates, type, name, phone; `quantity` books N rooms in one call (combined total, never `terpisah` language); `Book` find-or-creates guest, never claim saved before success. On success `bubble1` summary + `bubble2` total/IDs/times, close with `bubble3` `Terima kasih banyak kak, sampai jumpa.`, no question. Dates YYYY-MM-DD, bare dates written plain with NO `waktu WITA` (`for_formatter` rule 4); WITA only with clock times (CHECKINOUT 14:00/12:00 on booking success or when asked). Pre-booking confirm: `bubble1` status, `bubble2` rincian dates/total (dates plain), `bubble3` single confirmation question (`for_formatter` rule 6). Each bubble 1-2 short sentences, dense replies split across `bubble1/2`. Plain chat text only, no markdown/emoji, never particle `ya`, max one question per reply in `bubble3` only, address `kak`. PLAIN WORDS: short everyday Indonesian — `kamar yang tersedia` never `ketersediaan/ketersediaannya`, `kasih tahu` never `menginformasikan`. Tone: halus Javanese-polite Indonesian (lembut, merendah, tidak menggurui; no Bahasa Jawa). Greeting-only -> short greeting, no unprompted info. Booking without type -> ask type first, no availability call. SCOPE: hotel-only (greeting, harga, fasilitas, availability, booking, lookup, cancel); non-hotel incl. coding/script/tugas/general knowledge or hotel words as pretext (e.g. `kode javascript hello world`) -> `SOP.sop_text` exact reply `Maaf, saya tidak bisa membantu.` with no tools/clarification/question, `for_formatter` rule 5 forces `bubble1` exactly that + `bubble2/bubble3` empty (skips sends, saves tokens).
+Key rules:
+
+- Live tool data is source of truth for names/prices/facilities.
+- Putu intro once per conversation; never repeat stated info.
+- Check-in 14:00 WITA, check-out 12:00 WITA.
+- Booking needs dates + name + phone; reuse known data, confirm before booking.
+- Guest data persists via internal PROFILE line + `guest_profiles` table.
+- Plain chat text, address `kak`, max one question in last bubble.
 
 ## Maintains this doc
 
-- Just put overview and purpose , don't put too much details
+- Just put overview and purpose, don't put too much details
 - Drop-in replace things if something needs updating
 - This document must be updated whenever the workflow changes
