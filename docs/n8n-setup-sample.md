@@ -2,6 +2,10 @@
 
 ## 1. `docker-compose.yml`
 
+<details>
+
+<summary><code>docker-compose.yml</code> (click to expand)</summary>
+
 ```yaml
 # guide: https://docs.n8n.io/deploy/host-n8n/install-options/use-a-cloud-provider/use-docker-compose
 
@@ -118,9 +122,15 @@ services:
       N8N_SANDBOX_SERVICE_URL: http://sandbox-api:8080
 ```
 
+</details>
+
 ## 2. `.env`
 
-```sh
+<details>
+
+<summary><code>.env</code> (click to expand)</summary>
+
+```bash
 # Sandbox service secrets — pick your own values
 SANDBOX_API_KEYS=change-me-api-key
 SANDBOX_API_RUNNER_REGISTRATION_TOKEN=change-me-registration-token
@@ -145,7 +155,13 @@ N8N_EDITOR_BASE_URL=https://modern-stack-42d9.trycloudflare.com
 N8N_TRUST_PROXY=true
 ```
 
+</details>
+
 ## 3. `searxng-settings.yml`
+
+<details>
+
+<summary><code>searxng-settings.yml</code> (click to expand)</summary>
 
 ```yaml
 use_default_settings: true
@@ -154,3 +170,9 @@ search:
     - html
     - json
 ```
+
+</details>
+
+## 4. Import workflow
+
+Download and import [n8n-receptionist-workflow.json](n8n-receptionist-workflow.json) into your n8n instance.

@@ -39,7 +39,7 @@ docker compose up -d
 
 ## API Docs
 
-See [docs/opencollection/](docs/opencollection/) for API docs.
+See [docs/opencollection/README.md](docs/opencollection/README.md) for API docs.
 
 ## N8n Setup
 
