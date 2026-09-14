@@ -1,6 +1,6 @@
 # N8N Receptionist Workflow
 
-Purpose: Putu, Niwde Stay receptionist in Bahasa Indonesia via webchat + Telegram. Handles greeting, prices, facilities, availability, booking, lookup, cancel. Hotel-only scope.
+Purpose: Putu, Niwde Guest House receptionist in Bahasa Indonesia via webchat + Telegram. Handles greeting, prices, facilities, availability, booking, lookup, cancel. Hotel-only scope.
 
 Active workflow: `Receptionist workflow` (`jrd5X0Xeye1AIUei`, active, 41 nodes).
 

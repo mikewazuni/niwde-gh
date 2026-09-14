@@ -1,6 +1,6 @@
 ## Goal
 
-User easliy use this POC app with simple docker compose image from `ghcr.io/mikewazuni/niwde-stay:latest`
+User easliy use this POC app with simple docker compose image from `ghcr.io/mikewazuni/niwde-gh:latest`
 
 ## The Stack
 
@@ -18,7 +18,7 @@ Must read `N8N_RECEPTIONIS_WORKFLOW.md` for n8n receptionist overview. If workfl
 
 ## API Docs
 
-Must maintain up-to-date API docs file in `docs/nide-stay-oc/`
+Must maintain up-to-date API docs file in `docs/niwde-gh-oc/`
 OpenCollection Spec docs (https://spec.opencollection.com/)
 
 ## Commit Message

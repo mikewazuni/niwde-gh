@@ -1,20 +1,20 @@
 networks:
-  niwdestay-net:
-    name: niwdestay-net
+  niwde-gh-net:
+    name: niwde-gh-net
 
 volumes:
   data: {}
 
 services:
-  niwde-stay-app:
+  niwde-gh-app:
     # Local dev: builds ./Dockerfile (vanilla PocketBase + pb_hooks/).
     # The built image is tagged as the GHCR image below.
     build:
       context: .
       args:
         PB_VERSION: ${PB_VERSION:-0.40.3}
-    image: ghcr.io/mikewazuni/niwde-stay:latest
-    container_name: niwde-pb
+    image: ghcr.io/mikewazuni/niwde-gh:latest
+    container_name: niwde-gh-pb
     restart: unless-stopped
     ports:
       - 8190:8090
@@ -22,7 +22,7 @@ services:
       - data:/pb/pb_data
       - ./pb_migrations:/pb/pb_migrations
     networks:
-      - niwdestay-net
+      - niwde-gh-net
     env_file:
       - path: .env
         required: false

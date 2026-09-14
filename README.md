@@ -1,4 +1,4 @@
-# Niwde Stay
+# Niwde Guest House
 
 POC Hotel CRUD Project
 Framework use PocketBase, docs: https://pocketbase.io/docs
@@ -9,21 +9,21 @@ Framework use PocketBase, docs: https://pocketbase.io/docs
 
 ```yaml
 networks:
-  niwdestay-net:
-    name: niwdestay-net
+  niwde-gh-net:
+    name: niwde-gh-net
 
 volumes:
-  niwde_data: {}
+  niwde_gh_data: {}
 
 services:
-  niwde-stay-app:
-    image: ghcr.io/mikewazuni/niwde-stay:latest
+  niwde-gh-app:
+    image: ghcr.io/mikewazuni/niwde-gh:latest
     ports:
       - 8190:8090
     networks:
-      - niwdestay-net
+      - niwde-gh-net
     volumes:
-      - niwde_data:/pb/pb_data
+      - niwde_gh_data:/pb/pb_data
     environment:
       EMAIL: admin@app.com
       ADMIN_PASSWORD: Admin12345
@@ -39,4 +39,4 @@ docker compose up -d
 
 ## API Docs
 
-See [docs/nide-stay-oc/](docs/nide-stay-oc/) for API docs.
+See [docs/niwde-gh-oc/](docs/niwde-gh-oc/) for API docs.
