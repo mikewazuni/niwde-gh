@@ -39,4 +39,8 @@ docker compose up -d
 
 ## API Docs
 
-See [docs/niwde-gh-oc/](docs/niwde-gh-oc/) for API docs.
+See [docs/opencollection/](docs/opencollection/) for API docs.
+
+## N8n Setup
+
+For n8n setup, see [docs/n8n-setup-sample.md](docs/n8n-setup-sample.md).
