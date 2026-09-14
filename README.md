@@ -8,6 +8,10 @@ Framework use PocketBase, docs: https://pocketbase.io/docs
 1. Create `docker-compose.yml`
 
 ```yaml
+networks:
+  niwdestay-net:
+    name: niwdestay-net
+
 volumes:
   niwde_data: {}
 
@@ -16,6 +20,8 @@ services:
     image: ghcr.io/mikewazuni/niwde-stay:latest
     ports:
       - 8190:8090
+    networks:
+      - niwdestay-net
     volumes:
       - niwde_data:/pb/pb_data
     environment:
@@ -29,14 +35,8 @@ services:
 docker compose up -d
 ```
 
-3. Open http://localhost:8190/_/ in your browser
+3. Open http://localhost:8190/_/ in your browser, login with `admin@app.com` / `Admin12345`.
 
-## Create the superuser
-
-```bash
-docker compose exec niwde-pb /pb/pocketbase superuser upsert admin@app.com Admin12345 --dir=/pb/pb_data
-```
-
-## API Endpoints
+## API Docs
 
 See [docs/nide-stay-oc/](docs/nide-stay-oc/) for API docs.
