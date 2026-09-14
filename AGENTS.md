@@ -1,6 +1,6 @@
 ## Goal
 
-User easliy use this MVP app with simple docker compose image from `ghcr.io/mikewazuni/niwde-stay:latest`
+User easliy use this POC app with simple docker compose image from `ghcr.io/mikewazuni/niwde-stay:latest`
 
 ## The Stack
 

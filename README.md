@@ -1,7 +1,7 @@
 # Niwde Stay
 
-Framework use PocketBase (https://pocketbase.io)
-Docs: https://pocketbase.io/docs
+POC Hotel CRUD Project
+Framework use PocketBase, docs: https://pocketbase.io/docs
 
 ## Quick start
 
@@ -9,7 +9,7 @@ Docs: https://pocketbase.io/docs
 
 ```yaml
 volumes:
-  data: {}
+  niwde_data: {}
 
 services:
   niwde-stay-app:
@@ -17,7 +17,7 @@ services:
     ports:
       - 8190:8090
     volumes:
-      - data:/pb/pb_data
+      - niwde_data:/pb/pb_data
     environment:
       EMAIL: admin@app.com
       ADMIN_PASSWORD: Admin12345
