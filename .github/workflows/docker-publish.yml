@@ -9,6 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  PB_VERSION: 0.40.3
 
 jobs:
   build-and-push:
@@ -39,7 +40,7 @@ jobs:
           tags: |
             type=sha,prefix=
             type=ref,event=tag
-            type=raw,value=latest
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and push
         uses: docker/build-push-action@v7
@@ -50,6 +51,6 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            PB_VERSION=0.40.3
+            PB_VERSION=${{ env.PB_VERSION }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

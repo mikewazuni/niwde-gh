@@ -1,5 +1,9 @@
 .git
+.github/
+docs/
 data/
+pb_data/
 .env
 .DS_Store
-README.md
+*.md
+opencode.json
